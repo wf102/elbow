@@ -13,7 +13,7 @@ def plot_elbow():
     fig, ax = plt.subplots(figsize=(12,9))
 
     plt.ylim(0,150)
-    plt.xlim(0,len(df))
+    plt.xlim(0,len(df)+start_date)
     plt.xlabel("Time [days]")
     plt.ylabel("Range [degrees]")
 
