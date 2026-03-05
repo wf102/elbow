@@ -6,7 +6,7 @@ min_periods = 2
 
 def plot_elbow(window=1):
 
-    start_date = 0
+    start_date = 14 # days after surgery
 
     df = pd.read_csv("elbow_data.txt", delimiter=',', names=('ext','flex'))
 
@@ -21,13 +21,14 @@ def plot_elbow(window=1):
 
     days = [i + start_date for i in range(len(df))]
 
-    fig, ax = plt.subplots(figsize=(12,9))
+    fig, ax = plt.subplots(figsize=(14,9))
 
     plt.ylim(0,150)
-    plt.xlim(0,len(df)+start_date)
+    plt.xlim(0,len(df)+start_date+5)
     plt.xlabel("Time [days]")
     plt.ylabel("Range [degrees]")
 
+    ax.set_xticks(range(0, len(df)+start_date+5, 20))
     ax.set_yticks(range(0, 151, 10))
     ax.grid(axis="y", linestyle="-", alpha=0.7)
 
@@ -37,6 +38,7 @@ def plot_elbow(window=1):
 
     ax.fill_between(days, df['ext_ma'], df['flex_ma'], color="red", alpha=0.3)
 
+    plt.tight_layout()
     plt.savefig('plot.png')
 
 if __name__ == "__main__":
