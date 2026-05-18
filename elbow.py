@@ -67,6 +67,11 @@ def plot_elbow(window=1):
     plt.scatter(dates, df['flex'], color='red', marker='.', s=6)
     plt.plot(dates, df['range_ma'], color='blue')
 
+    plt.axvline(x = orif_date, color = 'darkgrey', linestyle='--')
+    plt.axvline(x = arthrolysis_date, color = 'darkgrey', linestyle='--')
+    ax.text(orif_date+datetime.timedelta(days=-4), 12, 'ORIF', color='darkgrey', rotation=90)
+    ax.text(arthrolysis_date+datetime.timedelta(days=-4), 12, 'Arthrolysis', color='darkgrey', rotation=90)
+
     ax.fill_between(dates, df['ext_ma'], df['flex_ma'], color="red", alpha=0.3)
     ax.tick_params(axis='x', rotation=0)
 
