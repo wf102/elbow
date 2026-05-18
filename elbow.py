@@ -1,12 +1,22 @@
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import numpy as np
 import pandas as pd
+import datetime
 
 WINDOW = 5
 min_periods = 2
+use_dates = True
 
 def plot_elbow(window=1):
 
-    start_date = 14 # days after surgery
+    accident_date = datetime.datetime(2025, 8, 9)
+    orif_date = datetime.datetime(2025, 8, 29)
+    first_recorded_date = datetime.datetime(2025, 9, 12)
+    arthrolysis_date = datetime.datetime(2026, 3, 26)
+
+    # start_date = 14 # days after surgery
+    start_date = (first_recorded_date - orif_date).days
 
     df = pd.read_csv("elbow_data.txt", delimiter=',', names=('ext','flex'))
 
@@ -19,24 +29,54 @@ def plot_elbow(window=1):
     df["mid_ma"] = df["mid"].rolling(window=window, center=True, min_periods=min_periods).mean()
     df["range_ma"] = df["range"].rolling(window=window, center=True, min_periods=min_periods).mean()
 
+
     days = [i + start_date for i in range(len(df))]
+    dates = [first_recorded_date + datetime.timedelta(days=i) for i in range(len(df))]
 
     fig, ax = plt.subplots(figsize=(14,9))
 
-    plt.ylim(0,150)
-    plt.xlim(0,len(df)+start_date+5)
-    plt.xlabel("Time [days]")
-    plt.ylabel("Range [degrees]")
+    def _mdate2days(x):
+        x_arr = np.asarray(x)
+        if x_arr.ndim == 0:
+            dt = mdates.num2date(float(x_arr)).replace(tzinfo=None)
+            return (dt - orif_date).days
+        values = [
+            (mdates.num2date(float(xi)).replace(tzinfo=None) - orif_date).days
+            for xi in x_arr.ravel()
+        ]
+        return np.array(values).reshape(x_arr.shape)
 
-    ax.set_xticks(range(0, len(df)+start_date+5, 20))
+    def _days2mdate(x):
+        x_arr = np.asarray(x)
+        if x_arr.ndim == 0:
+            return mdates.date2num(orif_date + datetime.timedelta(days=int(x_arr)))
+        values = [
+            mdates.date2num(orif_date + datetime.timedelta(days=int(xi)))
+            for xi in x_arr.ravel()
+        ]
+        return np.array(values).reshape(x_arr.shape)
+
+    plt.ylim(0,150)
+    plt.xlim(accident_date, dates[-1]+datetime.timedelta(days=start_date+5))
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Range [degrees]")
+    ax.xaxis.set_major_locator(mdates.MonthLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
+
+    max_days = (dates[-1] - orif_date).days
+    secax = ax.secondary_xaxis('top', functions=(_mdate2days, _days2mdate))
+    secax.set_xticks(range(0, max_days + 1, 20))
+    # secax.set_xlabel("Days since ORIF")
+
     ax.set_yticks(range(0, 151, 10))
     ax.grid(axis="y", linestyle="-", alpha=0.7)
 
-    plt.scatter(days, df['ext'], color='red', marker='.', s=6)
-    plt.scatter(days, df['flex'], color='red', marker='.', s=6)
-    plt.plot(days, df['range_ma'], color='blue')
+    plt.scatter(dates, df['ext'], color='red', marker='.', s=6)
+    plt.scatter(dates, df['flex'], color='red', marker='.', s=6)
+    plt.plot(dates, df['range_ma'], color='blue')
 
-    ax.fill_between(days, df['ext_ma'], df['flex_ma'], color="red", alpha=0.3)
+    ax.fill_between(dates, df['ext_ma'], df['flex_ma'], color="red", alpha=0.3)
+    ax.tick_params(axis='x', rotation=0)
 
     plt.tight_layout()
     plt.savefig('plot.png')
