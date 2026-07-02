@@ -47,10 +47,10 @@ def plot_elbow(window=1):
 
     dates = [first_recorded_date + datetime.timedelta(days=i) for i in range(len(df))]
 
-    fig, ax = plt.subplots(figsize=(14,9))
+    fig, ax = plt.subplots(figsize=(14,8))
 
     plt.ylim(0,150)
-    plt.xlim(accident_date, dates[-1]+datetime.timedelta(days=10))
+    plt.xlim(accident_date, dates[-1]+datetime.timedelta(days=14))
     ax.set_xlabel("Date")
     ax.set_ylabel("Range [degrees]")
     ax.xaxis.set_major_locator(mdates.MonthLocator())
