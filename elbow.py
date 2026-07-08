@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import datetime
 
-WINDOW = 5
+WINDOW = 7
 min_periods = 2
 use_dates = True
 
