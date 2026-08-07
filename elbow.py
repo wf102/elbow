@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import datetime
 
+FILENAME = "elbow_data.txt"
 WINDOW = 7
 min_periods = 2
 use_dates = True
@@ -12,6 +13,15 @@ accident_date = datetime.datetime(2025, 8, 9)
 orif_date = datetime.datetime(2025, 8, 29)
 first_recorded_date = datetime.datetime(2025, 9, 12)
 arthrolysis_date = datetime.datetime(2026, 3, 26)
+
+def read_data(filename):
+    df = pd.read_csv(filename, delimiter=',', names=('ext','flex'))
+    df["mid"] = 0.5 * (df["flex"] + df["ext"])
+    df["range"] = df["flex"] - df["ext"]
+    df["flex_ma"] = df["flex"].rolling(window=WINDOW, center=True, min_periods=min_periods).mean()
+    df["ext_ma"] = df["ext"].rolling(window=WINDOW, center=True, min_periods=min_periods).mean()
+    df["range_ma"] = df["range"].rolling(window=WINDOW, center=True, min_periods=min_periods).mean()
+    return df
 
 def _mdate2days(x):
     x_arr = np.asarray(x)
@@ -34,16 +44,7 @@ def _days2mdate(x):
     ]
     return np.array(values).reshape(x_arr.shape)
 
-def plot_elbow(window=1):
-
-    df = pd.read_csv("elbow_data.txt", delimiter=',', names=('ext','flex'))
-
-    df["mid"] = 0.5 * (df["flex"] + df["ext"])
-    df["range"] = df["flex"] - df["ext"]
-
-    df["flex_ma"] = df["flex"].rolling(window=window, center=True, min_periods=min_periods).mean()
-    df["ext_ma"] = df["ext"].rolling(window=window, center=True, min_periods=min_periods).mean()
-    df["range_ma"] = df["range"].rolling(window=window, center=True, min_periods=min_periods).mean()
+def plot_elbow(df):
 
     dates = [first_recorded_date + datetime.timedelta(days=i) for i in range(len(df))]
 
@@ -79,4 +80,5 @@ def plot_elbow(window=1):
     plt.savefig('plot.png')
 
 if __name__ == "__main__":
-    plot_elbow(WINDOW)
+    df = read_data(FILENAME)
+    plot_elbow(df)
