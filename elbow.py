@@ -81,6 +81,22 @@ def plot_elbow(df):
     plt.tight_layout()
     plt.savefig('plot.png')
 
+def print_stats(df):
+    print("================================")
+    print(f'Days since accident:     {(datetime.datetime.now() - accident_date).days}')
+    print(f'Days since ORIF:         {(datetime.datetime.now() - orif_date).days}')
+    print(f'Days since arthrolysis:  {(datetime.datetime.now() - arthrolysis_date).days}')
+    print("================================")
+
+    flexion = df["flex_smooth"].iloc[-1]
+    extension = df["ext_smooth"].iloc[-1]
+    print(f'Current flex:            {round(flexion, 1)}\N{DEGREE SIGN}')
+    print(f'Current extension:        {round(extension, 1)}\N{DEGREE SIGN}')
+    print(f'Current ROM:             {round(flexion - extension, 1)}\N{DEGREE SIGN}')
+    print(f'ROM recovered:            {round((flexion - extension)/150.0*100, 1)}%')
+    print("================================")
+
 if __name__ == "__main__":
     df = read_data(FILENAME)
     plot_elbow(df)
+    print_stats(df)
