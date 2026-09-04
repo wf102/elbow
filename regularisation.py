@@ -3,6 +3,11 @@ import pandas as pd
 from filterpy.kalman import KalmanFilter, rts_smoother
 from filterpy.common import Q_discrete_white_noise
 
+def moving_average(series, window=7, min_periods=2):
+    """Smooth a scalar time series with a constant-velocity Kalman filter + RTS smoother."""
+
+    return series.rolling(window=window, center=True, min_periods=min_periods).mean()
+
 def kalman_smooth_rom(series, measurement_sd=1.0, process_sd=0.1):
     """
     Smooth a scalar time series with a constant-velocity Kalman filter + RTS smoother.
