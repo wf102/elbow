@@ -4,7 +4,7 @@ from filterpy.kalman import KalmanFilter, rts_smoother
 from filterpy.common import Q_discrete_white_noise
 
 def moving_average(series, window=7, min_periods=2):
-    """Smooth a scalar time series with a constant-velocity Kalman filter + RTS smoother."""
+    """Smooth a scalar time series with a moving average"""
 
     return series.rolling(window=window, center=True, min_periods=min_periods).mean()
 
