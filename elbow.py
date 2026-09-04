@@ -3,11 +3,10 @@ import matplotlib.dates as mdates
 import numpy as np
 import pandas as pd
 import datetime
+from regularisation import kalman_smooth_rom
 
 FILENAME = "elbow_data.txt"
-WINDOW = 7
-min_periods = 2
-use_dates = True
+measurement_sd = 1.0
 
 accident_date = datetime.datetime(2025, 8, 9)
 orif_date = datetime.datetime(2025, 8, 29)
@@ -18,9 +17,10 @@ def read_data(filename):
     df = pd.read_csv(filename, delimiter=',', names=('ext','flex'))
     df["mid"] = 0.5 * (df["flex"] + df["ext"])
     df["range"] = df["flex"] - df["ext"]
-    df["flex_ma"] = df["flex"].rolling(window=WINDOW, center=True, min_periods=min_periods).mean()
-    df["ext_ma"] = df["ext"].rolling(window=WINDOW, center=True, min_periods=min_periods).mean()
-    df["range_ma"] = df["range"].rolling(window=WINDOW, center=True, min_periods=min_periods).mean()
+    df["flex_smooth"] = kalman_smooth_rom(df["flex"], measurement_sd)
+    df["ext_smooth"] = kalman_smooth_rom(df["ext"], measurement_sd)
+    df["range_smooth"] = df["flex_smooth"] - df["ext_smooth"]
+
     df["date"] = [first_recorded_date + datetime.timedelta(days=i) for i in range(len(df))]
 
     return df
@@ -68,14 +68,14 @@ def plot_elbow(df):
 
     plt.scatter(df["date"], df['ext'], color='red', marker='.', s=6)
     plt.scatter(df["date"], df['flex'], color='red', marker='.', s=6)
-    plt.plot(df["date"], df['range_ma'], color='blue')
+    plt.plot(df["date"], df['range_smooth'], color='blue')
 
     plt.axvline(x = orif_date, color = 'darkgrey', linestyle='--')
     plt.axvline(x = arthrolysis_date, color = 'darkgrey', linestyle='--')
     ax.text(orif_date+datetime.timedelta(days=-4), 12, 'ORIF', color='darkgrey', rotation=90)
     ax.text(arthrolysis_date+datetime.timedelta(days=-4), 12, 'Arthrolysis', color='darkgrey', rotation=90)
 
-    ax.fill_between(df["date"], df['ext_ma'], df['flex_ma'], color="red", alpha=0.3)
+    ax.fill_between(df["date"], df['ext_smooth'], df['flex_smooth'], color="red", alpha=0.3)
     ax.tick_params(axis='x', rotation=0)
 
     plt.tight_layout()
