@@ -9,6 +9,7 @@ A subsequent open arthrolysis procedure was carried out in order to improve mobi
 Two of the four original screws were also removed.
 
 The script `elbow.py` generates a plot that shows the ROM across time, as well as the arc (ROM<sub>max</sub> - ROM<sub>min</sub>).
+A Kalman filter is used to reduce noice in the data.
 
 Note a fully stright arm is 0°, a fully bent arm is ~150°.
 
