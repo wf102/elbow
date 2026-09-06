@@ -17,12 +17,11 @@ def read_data(filename):
     df = pd.read_csv(filename, delimiter=',', names=('ext','flex'))
     df["mid"] = 0.5 * (df["flex"] + df["ext"])
     df["range"] = df["flex"] - df["ext"]
-    df["flex_smooth"] = kalman_smooth_rom(df["flex"], measurement_sd)
-    df["ext_smooth"] = kalman_smooth_rom(df["ext"], measurement_sd)
+    df["flex_smooth"], df["flex_grad"] = kalman_smooth_rom(df["flex"], measurement_sd)
+    df["ext_smooth"], df["ext_grad"] = kalman_smooth_rom(df["ext"], measurement_sd)
     df["range_smooth"] = df["flex_smooth"] - df["ext_smooth"]
-
+    df["range_grad"] = df["flex_grad"] - df["ext_grad"]
     df["date"] = [first_recorded_date + datetime.timedelta(days=i) for i in range(len(df))]
-
     return df
 
 def _mdate2days(x):
@@ -50,7 +49,7 @@ def plot_elbow(df):
 
     last_date = df["date"].iloc[-1].to_pydatetime() + datetime.timedelta(days=14)
 
-    fig, ax = plt.subplots(figsize=(14,8))
+    fig, ax = plt.subplots(figsize=(16,8))
 
     plt.ylim(0,150)
     plt.xlim(accident_date, last_date)

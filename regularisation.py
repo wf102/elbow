@@ -36,4 +36,7 @@ def kalman_smooth_rom(series, measurement_sd=1.0, process_sd=0.1):
     Qs = [kf.Q] * len(zs)
     smoothed_means, _, _, _ = rts_smoother(means, covariances, Fs, Qs)
 
-    return pd.Series(smoothed_means[:, 0, 0], index=series.index)
+    smoothed = pd.Series(smoothed_means[:, 0, 0], index=series.index)
+    gradient = pd.Series(smoothed_means[:, 1, 0], index=series.index)
+
+    return smoothed, gradient
