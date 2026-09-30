@@ -49,7 +49,7 @@ def plot_elbow(df):
 
     last_date = df["date"].iloc[-1].to_pydatetime() + datetime.timedelta(days=14)
 
-    fig, ax = plt.subplots(figsize=(16,8))
+    fig, ax = plt.subplots(figsize=(16,10))
 
     plt.ylim(0,155)
     plt.xlim(accident_date, last_date)
