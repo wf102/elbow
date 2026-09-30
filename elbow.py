@@ -51,7 +51,7 @@ def plot_elbow(df):
 
     fig, ax = plt.subplots(figsize=(16,8))
 
-    plt.ylim(0,150)
+    plt.ylim(0,155)
     plt.xlim(accident_date, last_date)
     ax.set_xlabel("Date")
     ax.set_ylabel("Range [degrees]")
