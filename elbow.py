@@ -7,6 +7,7 @@ from regularisation import kalman_smooth_rom
 
 FILENAME = "elbow_data.txt"
 measurement_sd = 1.0
+max_flex = 155.0
 
 accident_date = datetime.datetime(2025, 8, 9)
 orif_date = datetime.datetime(2025, 8, 29)
@@ -51,7 +52,7 @@ def plot_elbow(df):
 
     fig, ax = plt.subplots(figsize=(16,10))
 
-    plt.ylim(0,155)
+    plt.ylim(0, max_flex)
     plt.xlim(accident_date, last_date)
     ax.set_xlabel("Date")
     ax.set_ylabel("Range [degrees]")
@@ -92,7 +93,7 @@ def print_stats(df):
     print(f'Current flex:            {round(flexion, 1)}\N{DEGREE SIGN}')
     print(f'Current extension:        {round(extension, 1)}\N{DEGREE SIGN}')
     print(f'Current ROM:             {round(flexion - extension, 1)}\N{DEGREE SIGN}')
-    print(f'ROM recovered:            {round((flexion - extension)/150.0*100, 1)}%')
+    print(f'ROM recovered:            {round((flexion - extension)/max_flex*100, 1)}%')
     print("================================")
 
 if __name__ == "__main__":
