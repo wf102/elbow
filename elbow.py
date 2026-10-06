@@ -63,7 +63,7 @@ def plot_elbow(df):
     secax = ax.secondary_xaxis('top', functions=(_mdate2days, _days2mdate))
     secax.set_xticks(range(0, max_days + 1, 20))
 
-    ax.set_yticks(range(0, 151, 10))
+    ax.set_yticks(range(0, int(max_flex), 10))
     ax.grid(axis="y", linestyle="-", alpha=0.7)
 
     plt.scatter(df["date"], df['ext'], color='red', marker='.', s=6)
